@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">MVVM Login</string>
+    <string name="header">Header</string>
+    <string name="email_placeholder">Email</string>
+    <string name="password_placeholder">Password</string>
+    <string name="login_button">Login</string>
 </resources>
