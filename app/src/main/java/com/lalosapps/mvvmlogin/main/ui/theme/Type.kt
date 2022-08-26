@@ -1,4 +1,4 @@
-package com.lalosapps.mvvmlogin.ui.theme
+package com.lalosapps.mvvmlogin.main.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

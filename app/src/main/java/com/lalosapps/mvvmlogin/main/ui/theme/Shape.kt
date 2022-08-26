@@ -1,4 +1,4 @@
-package com.lalosapps.mvvmlogin.ui.theme
+package com.lalosapps.mvvmlogin.main.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes
