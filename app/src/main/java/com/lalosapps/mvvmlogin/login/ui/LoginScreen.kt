@@ -3,7 +3,10 @@ package com.lalosapps.mvvmlogin.login.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -12,9 +15,11 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -80,7 +85,7 @@ fun Login(
 ) {
 
     Column(
-        modifier = modifier
+        modifier = modifier.verticalScroll(rememberScrollState())
     ) {
         HeaderImage(modifier = Modifier.align(CenterHorizontally))
         Spacer(modifier = Modifier.height(16.dp))
@@ -127,7 +132,8 @@ fun LoginButton(
             CircularProgressIndicator(
                 modifier = Modifier
                     .width(24.dp)
-                    .height(24.dp)
+                    .height(24.dp),
+                color = Color.White
             )
         } else {
             Text(text = stringResource(R.string.login_button))
@@ -151,6 +157,7 @@ fun PasswordField(
     password: String,
     onPasswordChanged: (String) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
     TextField(
         value = password,
         onValueChange = onPasswordChanged,
@@ -158,7 +165,13 @@ fun PasswordField(
         placeholder = {
             Text(text = stringResource(R.string.password_placeholder))
         },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = { focusManager.clearFocus() }
+        ),
         singleLine = true,
         maxLines = 1,
         colors = TextFieldDefaults.textFieldColors(
@@ -182,7 +195,10 @@ fun EmailField(
         placeholder = {
             Text(text = stringResource(R.string.email_placeholder))
         },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Email,
+            imeAction = ImeAction.Next
+        ),
         singleLine = true,
         maxLines = 1,
         colors = TextFieldDefaults.textFieldColors(
