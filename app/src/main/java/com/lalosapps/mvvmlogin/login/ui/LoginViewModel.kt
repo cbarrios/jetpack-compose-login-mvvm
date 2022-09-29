@@ -23,8 +23,29 @@ class LoginViewModel : ViewModel() {
     var loading by mutableStateOf(false)
         private set
 
+    var isSignedIn: Boolean? by mutableStateOf(null)
+        private set
+
     var snack: String? by mutableStateOf(null)
         private set
+
+    init {
+        viewModelScope.launch {
+            // simulate asking our server about the user login status
+            delay(1000)
+            // let's say we are not logged in. Change this to test both behaviors
+            isSignedIn = false
+        }
+    }
+
+    fun logout() {
+        email = ""
+        password = ""
+        loginEnabled = false
+        loading = false
+        snack = "Logout successful"
+        isSignedIn = false
+    }
 
     fun onSnackCompleted() {
         snack = null
@@ -43,7 +64,18 @@ class LoginViewModel : ViewModel() {
             delay(3000)
             loginEnabled = isValidEmail(email) && isValidPassword(password)
             loading = false
+            randomLogin()
+        }
+    }
+
+    private fun randomLogin() {
+        val ok = (0..1).random() == 1
+        if (ok) {
             snack = "Login successful"
+            isSignedIn = true
+        } else {
+            snack = "Couldn't login. Please try again."
+            isSignedIn = false
         }
     }
 

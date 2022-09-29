@@ -28,53 +28,35 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lalosapps.mvvmlogin.R
 import com.lalosapps.mvvmlogin.main.ui.theme.*
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = viewModel()
+    email: String,
+    password: String,
+    loginEnabled: Boolean,
+    loading: Boolean,
+    onEmailChanged: (String) -> Unit,
+    onPasswordChanged: (String) -> Unit,
+    onLoginClick: () -> Unit
 ) {
-    val email = viewModel.email
-    val password = viewModel.password
-    val loginEnabled = viewModel.loginEnabled
-    val loading = viewModel.loading
-
-    val scaffoldState = rememberScaffoldState()
-    viewModel.snack?.let { snack ->
-        LaunchedEffect(snack) {
-            scaffoldState.snackbarHostState.showSnackbar(snack)
-            viewModel.onSnackCompleted()
-        }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Login(
+            email = email,
+            password = password,
+            loginEnabled = loginEnabled,
+            loading = loading,
+            onEmailChanged = onEmailChanged,
+            onPasswordChanged = onPasswordChanged,
+            onLoginSelected = onLoginClick,
+            modifier = Modifier.align(Center)
+        )
     }
-
-    Scaffold(
-        scaffoldState = scaffoldState
-    ) { padding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp)
-        ) {
-            Login(
-                email = email,
-                password = password,
-                loginEnabled = loginEnabled,
-                loading = loading,
-                onEmailChanged = {
-                    viewModel.onLoginChanged(it, password)
-                },
-                onPasswordChanged = {
-                    viewModel.onLoginChanged(email, it)
-                },
-                onLoginSelected = viewModel::onLoginSelected,
-                modifier = Modifier.align(Center)
-            )
-        }
-    }
-
 }
 
 @Composable
