@@ -6,9 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class LoginViewModel : ViewModel() {
@@ -25,8 +23,12 @@ class LoginViewModel : ViewModel() {
     var loading by mutableStateOf(false)
         private set
 
-    private val _snacks = Channel<String>()
-    val snacks = _snacks.receiveAsFlow()
+    var snack: String? by mutableStateOf(null)
+        private set
+
+    fun onSnackCompleted() {
+        snack = null
+    }
 
     fun onLoginChanged(email: String, password: String) {
         this.email = email
@@ -41,7 +43,7 @@ class LoginViewModel : ViewModel() {
             delay(3000)
             loginEnabled = isValidEmail(email) && isValidPassword(password)
             loading = false
-            _snacks.send("Login successful")
+            snack = "Login successful"
         }
     }
 

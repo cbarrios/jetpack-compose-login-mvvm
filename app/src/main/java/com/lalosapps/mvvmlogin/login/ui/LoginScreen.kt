@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lalosapps.mvvmlogin.R
 import com.lalosapps.mvvmlogin.main.ui.theme.*
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun LoginScreen(
@@ -43,9 +42,10 @@ fun LoginScreen(
     val loading = viewModel.loading
 
     val scaffoldState = rememberScaffoldState()
-    LaunchedEffect(key1 = true) {
-        viewModel.snacks.collectLatest {
-            scaffoldState.snackbarHostState.showSnackbar(it)
+    viewModel.snack?.let { snack ->
+        LaunchedEffect(snack) {
+            scaffoldState.snackbarHostState.showSnackbar(snack)
+            viewModel.onSnackCompleted()
         }
     }
 
