@@ -6,10 +6,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lalosapps.mvvmlogin.login.core.SnackMessage
+import com.lalosapps.mvvmlogin.login.data.AuthRepositoryImpl
+import com.lalosapps.mvvmlogin.login.domain.AuthRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(
+    private val authRepository: AuthRepository = AuthRepositoryImpl()
+) : ViewModel() {
 
     var email by mutableStateOf("")
         private set
@@ -26,7 +31,7 @@ class LoginViewModel : ViewModel() {
     var isSignedIn: Boolean? by mutableStateOf(null)
         private set
 
-    var snack: String? by mutableStateOf(null)
+    var snack: SnackMessage by mutableStateOf(SnackMessage())
         private set
 
     init {
@@ -39,16 +44,25 @@ class LoginViewModel : ViewModel() {
     }
 
     fun logout() {
-        email = ""
-        password = ""
-        loginEnabled = false
-        loading = false
-        snack = "Logout successful"
-        isSignedIn = false
+        viewModelScope.launch {
+            isSignedIn = null
+            val signedOut = authRepository.logoutUser()
+            if (signedOut) {
+                email = ""
+                password = ""
+                loginEnabled = false
+                loading = false
+                snack = SnackMessage(message = "Logout successful")
+                isSignedIn = false
+            } else {
+                // never going to happen in our case but it could happen on a server error
+                isSignedIn = true
+            }
+        }
     }
 
     fun onSnackCompleted() {
-        snack = null
+        snack = snack.copy(message = null)
     }
 
     fun onLoginChanged(email: String, password: String) {
@@ -61,20 +75,19 @@ class LoginViewModel : ViewModel() {
         viewModelScope.launch {
             loading = true
             loginEnabled = false
-            delay(3000)
+            val loggedIn = authRepository.loginUser()
             loginEnabled = isValidEmail(email) && isValidPassword(password)
             loading = false
-            randomLogin()
+            randomLogin(loggedIn)
         }
     }
 
-    private fun randomLogin() {
-        val ok = (0..1).random() == 1
-        if (ok) {
-            snack = "Login successful"
+    private fun randomLogin(loggedIn: Boolean) {
+        if (loggedIn) {
+            snack = snack.copy(message = "Login successful")
             isSignedIn = true
         } else {
-            snack = "Couldn't login. Please try again."
+            snack = snack.copy(id = snack.id.plus(1), message = "Couldn't login. Please try again.")
             isSignedIn = false
         }
     }

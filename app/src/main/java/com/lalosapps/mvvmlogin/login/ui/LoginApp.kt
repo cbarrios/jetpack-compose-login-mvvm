@@ -22,9 +22,9 @@ fun LoginApp() {
     val isSignedIn = viewModel.isSignedIn
 
     val scaffoldState = rememberScaffoldState()
-    viewModel.snack?.let { snack ->
-        LaunchedEffect(snack) {
-            scaffoldState.snackbarHostState.showSnackbar(snack)
+    viewModel.snack.message?.let { message ->
+        LaunchedEffect(viewModel.snack) {
+            scaffoldState.snackbarHostState.showSnackbar(message)
             viewModel.onSnackCompleted()
         }
     }
