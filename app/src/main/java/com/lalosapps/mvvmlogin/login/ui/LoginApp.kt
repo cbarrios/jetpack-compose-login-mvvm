@@ -1,5 +1,8 @@
 package com.lalosapps.mvvmlogin.login.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -29,7 +32,7 @@ fun LoginApp() {
     Scaffold(
         scaffoldState = scaffoldState
     ) { padding ->
-        if (isSignedIn == null) {
+        AnimatedVisibility(visible = isSignedIn == null, enter = fadeIn(), exit = fadeOut()) {
             Box(
                 modifier = Modifier
                     .padding(padding)
@@ -38,23 +41,24 @@ fun LoginApp() {
             ) {
                 CircularProgressIndicator()
             }
-        } else {
-            if (isSignedIn) {
-                HomeScreen(
-                    onLogout = viewModel::logout
-                )
-            } else {
-                LoginScreen(
-                    email = viewModel.email,
-                    password = viewModel.password,
-                    loginEnabled = viewModel.loginEnabled,
-                    loading = viewModel.loading,
-                    onEmailChanged = { viewModel.onLoginChanged(it, viewModel.password) },
-                    onPasswordChanged = { viewModel.onLoginChanged(viewModel.email, it) },
-                    onLoginClick = viewModel::onLoginSelected
-                )
-            }
+        }
 
+        AnimatedVisibility(visible = isSignedIn == true, enter = fadeIn(), exit = fadeOut()) {
+            HomeScreen(
+                onLogout = viewModel::logout
+            )
+        }
+
+        AnimatedVisibility(visible = isSignedIn == false, enter = fadeIn(), exit = fadeOut()) {
+            LoginScreen(
+                email = viewModel.email,
+                password = viewModel.password,
+                loginEnabled = viewModel.loginEnabled,
+                loading = viewModel.loading,
+                onEmailChanged = { viewModel.onLoginChanged(it, viewModel.password) },
+                onPasswordChanged = { viewModel.onLoginChanged(viewModel.email, it) },
+                onLoginClick = viewModel::onLoginSelected
+            )
         }
     }
 }
