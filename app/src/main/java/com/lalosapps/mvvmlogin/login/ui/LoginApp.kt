@@ -8,12 +8,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.lalosapps.mvvmlogin.main.ui.theme.MVVMLoginTheme
 
 @Composable
 fun LoginApp() {
@@ -34,20 +36,26 @@ fun LoginApp() {
         scaffoldState = scaffoldState
     ) { padding ->
         AnimatedVisibility(visible = isSignedIn == null, enter = fadeIn(), exit = fadeOut()) {
-            Box(
-                modifier = Modifier
-                    .padding(padding)
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
+            MVVMLoginTheme {
+                Surface {
+                    Box(
+                        modifier = Modifier
+                            .padding(padding)
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
             }
         }
 
         AnimatedVisibility(visible = isSignedIn == true, enter = fadeIn(), exit = fadeOut()) {
-            HomeScreen(
-                onLogout = viewModel::logout
-            )
+            MVVMLoginTheme {
+                HomeScreen(
+                    onLogout = viewModel::logout
+                )
+            }
         }
 
         AnimatedVisibility(visible = isSignedIn == false, enter = fadeIn(), exit = fadeOut()) {
