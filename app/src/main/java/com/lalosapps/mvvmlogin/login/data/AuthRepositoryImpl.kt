@@ -7,7 +7,7 @@ class AuthRepositoryImpl : AuthRepository {
 
     override suspend fun loginUser(): Boolean {
         delay(3000)
-        return (0..1).random() == 1
+        return (0..1).shuffled().random() == 1
     }
 
     override suspend fun logoutUser(): Boolean {

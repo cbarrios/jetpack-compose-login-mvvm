@@ -8,12 +8,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lalosapps.mvvmlogin.login.core.SnackMessage
 import com.lalosapps.mvvmlogin.login.data.AuthRepositoryImpl
+import com.lalosapps.mvvmlogin.login.data.UserRepositoryImpl
 import com.lalosapps.mvvmlogin.login.domain.AuthRepository
+import com.lalosapps.mvvmlogin.login.domain.User
+import com.lalosapps.mvvmlogin.login.domain.UserRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val authRepository: AuthRepository = AuthRepositoryImpl()
+    private val authRepository: AuthRepository = AuthRepositoryImpl(),
+    private val userRepository: UserRepository = UserRepositoryImpl()
 ) : ViewModel() {
 
     var email by mutableStateOf("")
@@ -33,6 +37,8 @@ class LoginViewModel(
 
     var snack: SnackMessage by mutableStateOf(SnackMessage())
         private set
+
+    val user = userRepository.getUser()
 
     init {
         viewModelScope.launch {
@@ -54,6 +60,7 @@ class LoginViewModel(
                 loading = false
                 snack = SnackMessage(message = "Logout successful")
                 isSignedIn = false
+                userRepository.setUser(User())
             } else {
                 // never going to happen in our case but it could happen on a server error
                 isSignedIn = true
@@ -79,7 +86,17 @@ class LoginViewModel(
             loginEnabled = isValidEmail(email) && isValidPassword(password)
             loading = false
             randomLogin(loggedIn)
+            if (loggedIn) startUser(email)
         }
+    }
+
+    fun updateUserData(data: List<String>) {
+        userRepository.updateUserData(data)
+    }
+
+    private suspend fun startUser(email: String) {
+        val data = userRepository.getUserData()
+        userRepository.setUser(User(email, data))
     }
 
     private fun randomLogin(loggedIn: Boolean) {

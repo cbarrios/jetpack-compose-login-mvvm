@@ -8,10 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -22,6 +22,7 @@ fun LoginApp() {
     // Single Source of Truth for login and logout
     val viewModel: LoginViewModel = viewModel()
     val isSignedIn = viewModel.isSignedIn
+    val user = viewModel.user.collectAsState().value
 
     val scaffoldState = rememberScaffoldState()
     LaunchedEffect(viewModel.snack) {
@@ -36,23 +37,21 @@ fun LoginApp() {
         scaffoldState = scaffoldState
     ) { padding ->
         AnimatedVisibility(visible = isSignedIn == null, enter = fadeIn(), exit = fadeOut()) {
-            MVVMLoginTheme {
-                Surface {
-                    Box(
-                        modifier = Modifier
-                            .padding(padding)
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
+            Box(
+                modifier = Modifier
+                    .padding(padding)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
         }
 
         AnimatedVisibility(visible = isSignedIn == true, enter = fadeIn(), exit = fadeOut()) {
             MVVMLoginTheme {
                 HomeScreen(
+                    user = user,
+                    updateUserData = viewModel::updateUserData,
                     onLogout = viewModel::logout
                 )
             }

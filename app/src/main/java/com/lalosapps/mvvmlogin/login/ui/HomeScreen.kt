@@ -2,6 +2,7 @@ package com.lalosapps.mvvmlogin.login.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -11,9 +12,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.lalosapps.mvvmlogin.login.domain.User
 
 @Composable
 fun HomeScreen(
+    user: User,
+    updateUserData: (List<String>) -> Unit,
     // We must call or reference this on the screen that has the logout event
     onLogout: () -> Unit
 ) {
@@ -27,6 +31,7 @@ fun HomeScreen(
         ) {
             composable("home") {
                 HomeScreenContent(
+                    user = user,
                     navigateToProfile = {
                         navController.navigate("profile")
                     }
@@ -34,6 +39,7 @@ fun HomeScreen(
             }
             composable("profile") {
                 ProfileScreen(
+                    updateUserData = updateUserData,
                     onLogout = onLogout
                 )
             }
@@ -43,6 +49,7 @@ fun HomeScreen(
 
 @Composable
 fun HomeScreenContent(
+    user: User,
     navigateToProfile: () -> Unit
 ) {
     Box(
@@ -54,7 +61,10 @@ fun HomeScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(text = "Welcome!")
+            if (user == User()) CircularProgressIndicator() else {
+                Text(text = "Welcome ${user.email}!")
+                Text(text = "Data: ${user.data}")
+            }
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = navigateToProfile) {
                 Text(text = "Go to Profile")
@@ -65,6 +75,7 @@ fun HomeScreenContent(
 
 @Composable
 fun ProfileScreen(
+    updateUserData: (List<String>) -> Unit,
     onLogout: () -> Unit
 ) {
     Box(
@@ -76,6 +87,12 @@ fun ProfileScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Text(text = "Profile Screen")
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = {
+                updateUserData(listOf("Android Dev with Compose <3"))
+            }) {
+                Text(text = "Update")
+            }
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = onLogout) {
                 Text(text = "Logout")
