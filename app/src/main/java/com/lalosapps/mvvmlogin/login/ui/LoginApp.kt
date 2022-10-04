@@ -11,18 +11,20 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lalosapps.mvvmlogin.main.ui.theme.MVVMLoginTheme
 
+@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun LoginApp() {
     // Single Source of Truth for login and logout
     val viewModel: LoginViewModel = viewModel()
     val isSignedIn = viewModel.isSignedIn
-    val user = viewModel.user.collectAsState().value
+    val user = viewModel.user.collectAsStateWithLifecycle().value
 
     val scaffoldState = rememberScaffoldState()
     LaunchedEffect(viewModel.snack) {
