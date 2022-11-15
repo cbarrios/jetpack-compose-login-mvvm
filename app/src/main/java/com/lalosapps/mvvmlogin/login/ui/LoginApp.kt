@@ -1,8 +1,6 @@
 package com.lalosapps.mvvmlogin.login.ui
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -38,37 +36,38 @@ fun LoginApp() {
     Scaffold(
         scaffoldState = scaffoldState
     ) { padding ->
-        AnimatedVisibility(visible = isSignedIn == null, enter = fadeIn(), exit = fadeOut()) {
-            Box(
-                modifier = Modifier
-                    .padding(padding)
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        }
-
-        AnimatedVisibility(visible = isSignedIn == true, enter = fadeIn(), exit = fadeOut()) {
-            MVVMLoginTheme {
-                HomeScreen(
-                    user = user,
-                    updateUserData = viewModel::updateUserData,
-                    onLogout = viewModel::logout
+        Crossfade(targetState = isSignedIn) {
+            when (it) {
+                null -> Box(
+                    modifier = Modifier
+                        .padding(padding)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+                true -> MVVMLoginTheme {
+                    HomeScreen(
+                        user = user,
+                        updateUserData = viewModel::updateUserData,
+                        onLogout = viewModel::logout
+                    )
+                }
+                false -> LoginScreen(
+                    email = viewModel.email,
+                    password = viewModel.password,
+                    loginEnabled = viewModel.loginEnabled,
+                    loading = viewModel.loading,
+                    onEmailChanged = { email ->
+                        viewModel.onLoginChanged(
+                            email,
+                            viewModel.password
+                        )
+                    },
+                    onPasswordChanged = { pass -> viewModel.onLoginChanged(viewModel.email, pass) },
+                    onLoginClick = viewModel::onLoginSelected
                 )
             }
-        }
-
-        AnimatedVisibility(visible = isSignedIn == false, enter = fadeIn(), exit = fadeOut()) {
-            LoginScreen(
-                email = viewModel.email,
-                password = viewModel.password,
-                loginEnabled = viewModel.loginEnabled,
-                loading = viewModel.loading,
-                onEmailChanged = { viewModel.onLoginChanged(it, viewModel.password) },
-                onPasswordChanged = { viewModel.onLoginChanged(viewModel.email, it) },
-                onLoginClick = viewModel::onLoginSelected
-            )
         }
     }
 }
